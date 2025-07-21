@@ -1,0 +1,65 @@
+---
+import Base from "@/layouts/Base.astro";
+import ProductGrid from "@/components/ProductGrid.astro";
+import BigBlockQuote from "@/components/BigBlockQuote.astro";
+import { fetchProducts } from "@/lib/nostr/fetchProducts";
+import philosophyQuotes from "@/data/philosophy-quotes.json";
+import type { NostrProduct } from "@/lib/nostr/types";
+
+// Helper function to find quote by ID
+const getQuoteById = (id: string) => {
+  return philosophyQuotes.find(q => q.id === id);
+};
+
+// Fetch products at build time
+let products: NostrProduct[] = [];
+try {
+  products = await fetchProducts();
+} catch {
+  // Continue with empty products array so build doesn't fail
+  // Error logging removed to avoid console.log warnings
+}
+
+// SEO metadata
+const pageTitle = "Sovereign Engineering Swag";
+const pageDescription = "Official Sovereign Engineering merchandise and products. Support the mission with exclusive gear.";
+
+// Shackleton quote
+const shackletonQuoteData = getQuoteById('shackleton');
+const shackletonQuote = shackletonQuoteData?.quote || "Fortitudine vincimus.";
+const quoteTranslation = "By endurance we conquer";
+---
+
+<Base title={pageTitle} description={pageDescription}>
+  <!-- Hero Section with consistent styling from podcast page -->
+  <section class="section bg-black text-white pt-[8rem]">
+    <div class="container">
+      <!-- Header -->
+      <div class="row justify-center">
+        <div class="col-12 text-center">
+          <h1 class="mb-4 text-white uppercase" style="font-size: 3rem;">
+            {pageTitle}
+          </h1>
+          <p class="text-xl font-primary uppercase tracking-wider mb-12 text-white">
+            Support the mission with official merchandise
+          </p>
+        </div>
+      </div>
+
+      <!-- Products -->
+      <div class="row justify-center">
+        <div class="col-12">
+          <ProductGrid products={products} />
+        </div>
+      </div>
+
+      <!-- Centered Quote -->
+      <div class="mt-16">
+        <BigBlockQuote
+          quote={`${shackletonQuote} (${quoteTranslation})`}
+          author="Ernest Shackleton"
+        />
+      </div>
+    </div>
+  </section>
+</Base>
